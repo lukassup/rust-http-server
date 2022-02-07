@@ -1,8 +1,5 @@
-// use std::collections::HashMap;
 use super::StatusCode;
-// use std::fmt::{Display, Formatter, Result as FmtResult};
-// use std::net::TcpStream;
-use std::io::{Write, Result as IoResult};
+use std::io::{Result as IoResult, Write};
 
 #[derive(Debug)]
 pub struct Response {
@@ -22,7 +19,7 @@ impl Response {
         };
         write!(
             stream,
-            "HTTP/1.1 {} {}\r\n\r\n{}",
+            "HTTP/1.1 {} {}\r\n\r\n{}\r\n",
             self.status_code,
             self.status_code.reason_phrase(),
             body,

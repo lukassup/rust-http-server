@@ -21,6 +21,18 @@ pub struct Request<'buf> {
     // body: String,
 }
 
+impl<'buf> Request<'buf> {
+    pub fn path(&self) -> &str {
+        &self.path
+    }
+    pub fn method(&self) -> &Method {
+        &self.method
+    }
+    pub fn query_string(&self) -> Option<&QueryString> {
+        self.query_string.as_ref()
+    }
+}
+
 // 'buf lifetime parameter is necessary so that
 // HTTP request buffer is not deallocated from heap
 // while the pointer references exist with the same
@@ -40,7 +52,7 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
         let method: Method = method.parse()?;
         let mut query_string = None;
         if let Some(i) = path.find('?') {
-            query_string = Some(QueryString::from(&path[i+1..]));
+            query_string = Some(QueryString::from(&path[i + 1..]));
             path = &path[..i];
             // FIXME: thread 'main' panicked at 'byte index
             // 2 is out of bounds of `/`', src/http/request.rs:44:52
@@ -51,14 +63,13 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
             query_string,
         })
     }
-    
 }
 
 fn get_next_word(request: &str) -> Option<(&str, &str)> {
     for (i, c) in request.chars().enumerate() {
         match c {
-            ' ' | '\r' => return Some((&request[..i], &request[i+1..])),
-            _ => {},
+            ' ' | '\r' => return Some((&request[..i], &request[i + 1..])),
+            _ => {}
         }
     }
     None
@@ -89,7 +100,6 @@ impl fmt::Display for ParseError {
     }
 }
 impl Error for ParseError {}
-
 
 // Convert Utf8Error to ParseError when using ? operator
 impl From<str::Utf8Error> for ParseError {
